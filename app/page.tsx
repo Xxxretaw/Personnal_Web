@@ -5,6 +5,7 @@ import WorkShowcase from "@/components/WorkShowcase";
 import AboutBeliefs from "@/components/AboutBeliefs";
 import MusicSection from "@/components/MusicSection";
 import Connect from "@/components/Connect";
+import { MusicProvider } from "@/components/MusicContext";
 
 // CSS filter chains to tint black SVGs to site accent colors (visible but subtle)
 const F_GREEN   = "brightness(0) invert(1) sepia(1) hue-rotate(104deg) saturate(0.5) brightness(0.68)";
@@ -18,6 +19,7 @@ const BASE: React.CSSProperties = {
 
 export default function Home() {
   return (
+    <MusicProvider>
     <div id="top" className="relative min-h-screen flex flex-col">
       <SideColumns />
 
@@ -65,6 +67,7 @@ export default function Home() {
         style={{ ...BASE, top: 2900, left: 56, transform: "rotate(10deg)", transformOrigin: "left center", filter: F_SAGE }} />
 
       {/* Right side */}
+
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src="/SVG/interface/bulb.svg" alt="" aria-hidden="true" width={215}
         className="hidden md:block"
@@ -78,5 +81,6 @@ export default function Home() {
         className="hidden md:block"
         style={{ ...BASE, top: 3500, right: 56, transform: "rotate(20deg)", transformOrigin: "right center", filter: F_SAGE }} />
     </div>
+    </MusicProvider>
   );
 }
