@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useLenis } from "@/components/LenisContext";
 import { useMusic, SONGS } from "@/components/MusicContext";
+import { assetUrl } from "@/lib/assets";
 
 const navLinks = [
   { label: "work", href: "#work" },
@@ -107,7 +108,7 @@ export default function Navbar() {
           {/* Cover */}
           <div className="flex-shrink-0 w-8 h-8 rounded overflow-hidden shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={current.cover} alt="" className="w-full h-full object-cover" />
+            <img src={assetUrl(current.cover)} alt="" className="w-full h-full object-cover" />
           </div>
           {/* Title + artist (hidden on very small screens) */}
           <div className="hidden sm:block min-w-0 max-w-[120px] md:max-w-[160px]">

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { assetUrl } from "@/lib/assets";
 
 const CYCLING_WORDS = ["精准", "高效", "自然", "有趣"];
 
@@ -11,7 +12,7 @@ function InkIcon({
 }: { src: string; size: number; rotate?: number; opacity?: number; style?: React.CSSProperties }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt="" width={size} height={size} draggable={false}
+    <img src={assetUrl(src)} alt="" width={size} height={size} draggable={false}
       style={{
         display: "block", transform: `rotate(${rotate}deg)`,
         filter: "brightness(0)", opacity, pointerEvents: "none",
@@ -55,7 +56,7 @@ function ScatterCluster() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/pic/portrait.jpg"
+            src={assetUrl("/pic/portrait.jpg")}
             alt="黄逸能"
             className="w-full h-full object-cover"
           />

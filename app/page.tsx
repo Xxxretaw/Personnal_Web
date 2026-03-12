@@ -6,6 +6,7 @@ import AboutBeliefs from "@/components/AboutBeliefs";
 import MusicSection from "@/components/MusicSection";
 import Connect from "@/components/Connect";
 import { MusicProvider } from "@/components/MusicContext";
+import { assetUrl } from "@/lib/assets";
 
 // CSS filter chains to tint black SVGs to site accent colors (visible but subtle)
 const F_GREEN   = "brightness(0) invert(1) sepia(1) hue-rotate(104deg) saturate(0.5) brightness(0.68)";
@@ -54,30 +55,30 @@ export default function Home() {
       {/* ── Large accent icons — absolute, scroll with page, covered by content (z-5 < z-6) ── */}
       {/* Left side */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/SVG/objects/guitar.svg" alt="" aria-hidden="true" width={220}
+      <img src={assetUrl("/SVG/objects/guitar.svg")} alt="" aria-hidden="true" width={220}
         className="hidden md:block"
         style={{ ...BASE, top: 300, left: 56, transform: "rotate(-12deg)", transformOrigin: "left center", filter: F_GREEN }} />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/SVG/misc/hot-air-balloon.svg" alt="" aria-hidden="true" width={200}
+      <img src={assetUrl("/SVG/misc/hot-air-balloon.svg")} alt="" aria-hidden="true" width={200}
         className="hidden md:block"
         style={{ ...BASE, opacity: 0.4, top: 1600, left: 56, transform: "rotate(-6deg)", transformOrigin: "left center", filter: F_APRICOT }} />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/SVG/objects/paint-brush.svg" alt="" aria-hidden="true" width={185}
+      <img src={assetUrl("/SVG/objects/paint-brush.svg")} alt="" aria-hidden="true" width={185}
         className="hidden md:block"
         style={{ ...BASE, top: 2900, left: 56, transform: "rotate(10deg)", transformOrigin: "left center", filter: F_SAGE }} />
 
       {/* Right side */}
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/SVG/interface/bulb.svg" alt="" aria-hidden="true" width={215}
+      <img src={assetUrl("/SVG/interface/bulb.svg")} alt="" aria-hidden="true" width={215}
         className="hidden md:block"
         style={{ ...BASE, top: 780, right: 56, transform: "rotate(14deg)", transformOrigin: "right center", filter: F_GREEN }} />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/SVG/misc/trophy.svg" alt="" aria-hidden="true" width={195}
+      <img src={assetUrl("/SVG/misc/trophy.svg")} alt="" aria-hidden="true" width={195}
         className="hidden md:block"
         style={{ ...BASE, opacity: 0.4, top: 2100, right: 56, transform: "rotate(-8deg)", transformOrigin: "right center", filter: F_APRICOT }} />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/SVG/misc/rocket.svg" alt="" aria-hidden="true" width={175}
+      <img src={assetUrl("/SVG/misc/rocket.svg")} alt="" aria-hidden="true" width={175}
         className="hidden md:block"
         style={{ ...BASE, top: 3500, right: 56, transform: "rotate(20deg)", transformOrigin: "right center", filter: F_SAGE }} />
     </div>

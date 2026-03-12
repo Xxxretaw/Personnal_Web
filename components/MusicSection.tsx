@@ -3,9 +3,11 @@
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useCallback } from "react";
 import { useMusic, SONGS } from "@/components/MusicContext";
+import { assetUrl } from "@/lib/assets";
 
 // ── Vinyl with album cover (spins when playing) ────────────────────────────
 function VinylWithCover({ coverSrc, isPlaying }: { coverSrc: string; isPlaying: boolean }) {
+  const src = assetUrl(coverSrc);
   return (
     <div className="relative flex-shrink-0 w-32 h-32 sm:w-[150px] sm:h-[150px]">
       <div className="absolute inset-0 rounded-full"
@@ -37,7 +39,7 @@ function VinylWithCover({ coverSrc, isPlaying }: { coverSrc: string; isPlaying: 
             width: "72%", height: "72%", boxShadow: "0 0 0 2px rgba(0,0,0,0.2)",
           }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={coverSrc} alt="" className="w-full h-full object-cover" />
+            <img src={src} alt="" className="w-full h-full object-cover" />
           </div>
         </div>
         {/* Spindle hole (smaller) */}
@@ -230,7 +232,7 @@ function InkIcon({ src, size, rotate = 0, opacity = 0.22, style }: {
 }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt="" width={size} height={size} draggable={false}
+    <img src={assetUrl(src)} alt="" width={size} height={size} draggable={false}
       style={{ display: "block", transform: `rotate(${rotate}deg)`, filter: "brightness(0)",
         opacity, pointerEvents: "none", userSelect: "none", ...style }} />
   );
@@ -497,7 +499,7 @@ export default function MusicSection() {
                     boxShadow: active ? `0 0 0 2px ${song.labelColor}60` : "0 1px 3px rgba(0,0,0,0.08)",
                   }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={song.cover} alt="" className="w-full h-full object-cover" />
+                    <img src={assetUrl(song.cover)} alt="" className="w-full h-full object-cover" />
                   </div>
 
                   {/* Title + artist */}

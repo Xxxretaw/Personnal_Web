@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { assetUrl } from "@/lib/assets";
 
 const projects = [
   {
@@ -70,7 +71,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
       <div className="relative overflow-hidden aspect-[4/3] sm:aspect-video" style={{ backgroundColor: project.bgColor }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={project.image}
+          src={assetUrl(project.image)}
           alt={project.title}
           style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
         />

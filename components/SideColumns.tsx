@@ -1,5 +1,7 @@
 "use client";
 
+import { assetUrl } from "@/lib/assets";
+
 // ── Left column icons (base set, rendered 3x for seamless loop) ──────────
 const ICONS_LEFT_BASE = [
   { src: "/SVG/objects/guitar.svg",       label: "guitar",   size: 32, rotate: -12 },
@@ -49,7 +51,7 @@ function IconTile({ src, label, size, rotate, index }: {
     <div className="w-14 h-14 flex items-center justify-center border-b flex-shrink-0"
       style={{ backgroundColor: isEven ? "#EAE2D4" : "#DDD5C2", borderColor: "#C8B89A" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={label} width={size} height={size} draggable={false}
+      <img src={assetUrl(src)} alt={label} width={size} height={size} draggable={false}
         style={{ transform: `rotate(${rotate}deg)`, filter: "brightness(0)",
           opacity: isEven ? 0.28 : 0.2, pointerEvents: "none", userSelect: "none", display: "block" }} />
     </div>
