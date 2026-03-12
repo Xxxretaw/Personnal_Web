@@ -77,6 +77,8 @@ jobs:
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
+      - name: Add .nojekyll for GitHub Pages
+        run: touch ./out/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -2,6 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import { assetUrl } from "@/lib/assets";
 
 // ── Ink icon helper (shared pattern) ──────────────────────────────────────
 function InkIcon({
@@ -10,7 +11,7 @@ function InkIcon({
 }: { src: string; size: number; rotate?: number; opacity?: number; style?: React.CSSProperties }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt="" width={size} height={size} draggable={false}
+    <img src={assetUrl(src)} alt="" width={size} height={size} draggable={false}
       style={{ display: "block", transform: `rotate(${rotate}deg)`, filter: "brightness(0)",
         opacity, pointerEvents: "none", userSelect: "none", ...style }} />
   );
