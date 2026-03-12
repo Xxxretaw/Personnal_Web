@@ -1,26 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');
 @import "tailwindcss";
 
+@theme {
+  --color-cream: #F5F0E8;
+  --color-card: #FEFCF7;
+  --color-moss: #3D7A5F;
+  --color-moss-light: #4E9B77;
+  --color-apricot: #E8A87C;
+  --color-ink: #1C1C1C;
+  --color-muted: #7A7060;
+  --color-border: #C8B89A;
+  --color-sidebar-bg: #2D2D2D;
+  --color-grid-line: #BAD0E5;
+
+  --font-handwriting: var(--caveat), cursive;
+  --font-serif-display: var(--dm-serif), Georgia, serif;
+  --font-sans: var(--inter), system-ui, sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F5F0E8;
+  --foreground: #1C1C1C;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: auto;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Grid paper texture */
+.grid-paper {
+  background-color: #FEFCF7;
+  background-image:
+    linear-gradient(to right, #BAD0E5 1px, transparent 1px),
+    linear-gradient(to bottom, #BAD0E5 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Lined notebook paper texture */
+.lined-paper {
+  background-color: #FAF7EE;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    #D4C4A8 27px,
+    #D4C4A8 28px
+  );
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+  will-change: transform;
+  display: flex;
+  width: max-content;
+}
+
+/* Sidebar scroll animations (3x content, scroll 1/3 for seamless loop) */
+@keyframes scroll-down {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(0, -33.333%, 0); }
+}
+
+@keyframes scroll-up {
+  0% { transform: translate3d(0, -33.333%, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.animate-sidebar-down {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  animation: scroll-down 18s linear infinite;
+  will-change: transform;
+}
+
+.animate-sidebar-up {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  animation: scroll-up 18s linear infinite;
+  will-change: transform;
+}
+
+/* Pause animation on hover */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Vinyl spin */
+@keyframes vinyl-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Equalizer bars (playing indicator in playlist) */
+@keyframes equalizer-bar-1 { from { transform: scaleY(0.4); } to { transform: scaleY(1); } }
+@keyframes equalizer-bar-2 { from { transform: scaleY(0.6); } to { transform: scaleY(1); } }
+@keyframes equalizer-bar-3 { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+
+/* Playlist custom scrollbar */
+.playlist-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #C8B89A transparent;
+}
+.playlist-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.playlist-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+.playlist-scroll::-webkit-scrollbar-thumb {
+  background: #C8B89A;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+.playlist-scroll::-webkit-scrollbar-thumb:hover {
+  background: #A89878;
+}
+
+/* ── Music ambient effects (colors from each song's cover image) ──────────── */
+
+.ambient-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, transparent 40%, currentColor 100%);
+  opacity: 0.12;
+}
+.ambient-vignette-soft {
+  opacity: 0.14;
+  background: radial-gradient(ellipse 90% 70% at 50% 50%, transparent 50%, currentColor 100%);
+}
+
+.ambient-dots {
+  position: absolute;
+  inset: 0;
+  background-size: 100% 100%;
+  animation: ambient-drift 25s ease-in-out infinite;
+}
+
+.ambient-streak {
+  position: absolute;
+  inset: 0;
+  animation: ambient-road 12s linear infinite;
+}
+
+.ambient-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  animation: ambient-wave-motion 8s ease-in-out infinite;
+}
+
+.ambient-grid {
+  position: absolute;
+  inset: 0;
+  background-size: 28px 28px;
+  animation: ambient-grid-shift 20s linear infinite;
+}
+
+.ambient-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: ambient-blob-drift 18s ease-in-out infinite;
+}
+.ambient-blob-1 {
+  width: 240px;
+  height: 240px;
+  top: 5%;
+  left: 15%;
+}
+.ambient-blob-2 {
+  width: 180px;
+  height: 180px;
+  top: 45%;
+  left: 55%;
+  animation: ambient-blob-drift 22s ease-in-out infinite reverse;
+}
+
+.ambient-squiggle {
+  position: absolute;
+}
+.ambient-squiggle-pos {
+  top: 15%;
+  right: 28%;
+  animation: ambient-squiggle-float 10s ease-in-out infinite;
+}
+.ambient-squiggle svg {
+  width: 72px;
+  height: 14px;
+  display: block;
+}
+@keyframes ambient-squiggle-float {
+  0%, 100% { transform: translate(0, 0) rotate(-2deg); }
+  50% { transform: translate(2px, -3px) rotate(1deg); }
+}
+
+@keyframes ambient-drift {
+  0%, 100% { opacity: 0.7; transform: translate(0, 0); }
+  50% { opacity: 1; transform: translate(1%, -0.5%); }
+}
+@keyframes ambient-road {
+  from { transform: translateX(0); }
+  to { transform: translateX(102px); }
+}
+@keyframes ambient-wave-motion {
+  0%, 100% { transform: scaleX(1) translateY(0); }
+  50% { transform: scaleX(1.03) translateY(-1%); }
+}
+@keyframes ambient-grid-shift {
+  from { background-position: 0 0; }
+  to { background-position: 28px 28px; }
+}
+@keyframes ambient-blob-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(3%, -2%) scale(1.02); }
+  66% { transform: translate(-2%, 1%) scale(0.98); }
 }
