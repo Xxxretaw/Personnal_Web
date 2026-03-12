@@ -1,5 +1,5 @@
 /**
- * 静态资源路径 - 在 GitHub Pages 等子路径部署时自动添加 basePath
+ * 静态资源路径 - 在 GitHub Pages 等子路径部署时添加 basePath
  */
 const basePath = (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_BASE_PATH) || "";
 
