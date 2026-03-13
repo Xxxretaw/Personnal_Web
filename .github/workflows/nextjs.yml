@@ -71,7 +71,8 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build with Next.js
         env:
-          GITHUB_REPOSITORY: ${{ github.repository }}
+          # NEXT_PUBLIC_ 变量必须作为系统环境变量传入，才能被 webpack DefinePlugin 正确内联到客户端 bundle
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
       - name: Add .nojekyll for GitHub Pages
         run: touch ./out/.nojekyll
