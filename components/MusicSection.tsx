@@ -42,9 +42,6 @@ function VinylWithCover({ coverSrc, isPlaying }: { coverSrc: string; isPlaying: 
             <img src={src} alt="" className="w-full h-full object-cover" />
           </div>
         </div>
-        {/* Spindle hole (smaller) */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ width: "4.5%", height: "4.5%", backgroundColor: "#0a0a0a", zIndex: 3, boxShadow: "inset 0 1px 2px rgba(255,255,255,0.08)" }} />
       </div>
     </div>
   );
@@ -65,27 +62,62 @@ function MusicAmbientOverlay({
   accentColor: string;
   accentColor2?: string;
 }) {
-  const c1 = hexToRgba(accentColor, 0.2);
-  const c2 = hexToRgba(accentColor2 ?? accentColor, 0.15);
+  const c1 = hexToRgba(accentColor, 0.14);
+  const c2 = hexToRgba(accentColor2 ?? accentColor, 0.10);
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 1 }}
+      transition={{ duration: 1.4 }}
       key={accentColor}
       className="fixed inset-0 z-[4] pointer-events-none select-none"
       aria-hidden="true"
-      style={{ opacity: 1 }}
     >
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="ambient-streak"
-          style={{
-            background: `repeating-linear-gradient(90deg, transparent 0, transparent 96px, ${c1} 96px, ${c1} 100px, ${c2} 100px, ${c2} 104px)`,
-          }}
-        />
-      </div>
+      {/* 光晕 1 — 缓慢漂浮 */}
+      <motion.div
+        animate={{
+          x: ["0%", "6%", "-4%", "3%", "0%"],
+          y: ["0%", "-5%", "4%", "-3%", "0%"],
+          scale: [1, 1.06, 0.97, 1.04, 1],
+        }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", repeatType: "mirror" }}
+        style={{
+          position: "absolute", top: "-15%", left: "-10%",
+          width: "60vw", height: "60vw",
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${c1} 0%, transparent 68%)`,
+        }}
+      />
+      {/* 光晕 2 — 不同节奏漂浮 */}
+      <motion.div
+        animate={{
+          x: ["0%", "-5%", "4%", "-2%", "0%"],
+          y: ["0%", "6%", "-3%", "5%", "0%"],
+          scale: [1, 0.95, 1.05, 0.98, 1],
+        }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", repeatType: "mirror", delay: 3 }}
+        style={{
+          position: "absolute", bottom: "-18%", right: "-8%",
+          width: "50vw", height: "50vw",
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${c2} 0%, transparent 68%)`,
+        }}
+      />
+      {/* 光晕 3 — 中央游荡，极淡 */}
+      <motion.div
+        animate={{
+          x: ["0%", "8%", "-6%", "4%", "-3%", "0%"],
+          y: ["0%", "-4%", "7%", "-5%", "3%", "0%"],
+        }}
+        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut", repeatType: "mirror", delay: 7 }}
+        style={{
+          position: "absolute", top: "30%", left: "25%",
+          width: "40vw", height: "40vw",
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${hexToRgba(accentColor, 0.06)} 0%, transparent 65%)`,
+        }}
+      />
     </motion.div>
   );
 }
