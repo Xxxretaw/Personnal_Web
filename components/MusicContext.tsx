@@ -9,6 +9,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
+import { assetUrl } from "@/lib/assets";
 
 // ── Song data (shared) ─────────────────────────────────────────────────────
 export const SONGS = [
@@ -164,7 +165,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     if (!audio) return;
     setCurrentTime(0);
     setDuration(0);
-    audio.src = current.file;
+    audio.src = assetUrl(current.file);
     audio.load();
     if (shouldPlayRef.current) {
       shouldPlayRef.current = false;
