@@ -15,6 +15,7 @@ const projects = [
     accent: "#3D7A5F",
     bgColor: "#E8F5EE",
     image: null,
+    icon: "/SVG/interface/note.svg",
     link: "https://github.com/Xxxretaw/obs2feishu",
   },
   {
@@ -27,6 +28,7 @@ const projects = [
     accent: "#C8763A",
     bgColor: "#FDF3E8",
     image: null,
+    icon: "/SVG/interface/checklist.svg",
     link: "https://github.com/Xxxretaw/TodoList",
   },
   {
@@ -39,7 +41,8 @@ const projects = [
     accent: "#5B6FA8",
     bgColor: "#EBF1FB",
     image: null,
-    link: "https://github.com/Xxxretaw",
+    icon: "/SVG/objects/paint-bucket.svg",
+    link: "https://github.com/Xxxretaw/Pic_HSV",
   },
 ];
 
@@ -53,84 +56,71 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
       target="_blank"
       rel="noopener noreferrer"
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.15, ease: "easeOut" }}
-      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-      className="rounded-2xl overflow-hidden cursor-pointer block"
+      transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+      whileHover={{ y: -3, transition: { duration: 0.2 } }}
+      className="rounded-xl overflow-hidden cursor-pointer block"
       style={{
-        border: "2px solid #C8B89A",
+        border: "1.5px solid #E0D4C0",
         backgroundColor: "#FEFCF7",
         textDecoration: "none",
       }}
     >
-      {/* Colored top strip */}
-      <div className="h-2 w-full" style={{ backgroundColor: project.accent }} />
+      {/* Top accent bar — 6px */}
+      <div style={{ height: "6px", backgroundColor: project.accent }} />
 
-      {/* Image area */}
-      <div className="relative overflow-hidden aspect-[4/3] sm:aspect-video" style={{ backgroundColor: project.bgColor }}>
-        {project.image ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={assetUrl(project.image)}
-              alt={project.title}
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            />
-            {/* Subtle overlay for readability */}
-            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.18) 0%, transparent 60%)" }} />
-          </>
-        ) : (
-          <div
-            className="w-full h-full flex items-center justify-center"
-            style={{ backgroundColor: project.bgColor }}
-          >
-            {/* Code bracket SVG icon */}
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={project.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6 }}>
-              <polyline points="16 18 22 12 16 6" />
-              <polyline points="8 6 2 12 8 18" />
-            </svg>
-          </div>
-        )}
+      {/* Content */}
+      <div className="px-5 pt-3 pb-4">
+
         {/* Subtitle badge */}
-        <span className="absolute bottom-3 left-3 text-xs px-2 py-0.5 rounded-full"
+        <span
+          className="text-xs px-2 py-0.5 rounded-full"
           style={{
-            backgroundColor: "rgba(255,255,255,0.88)",
+            backgroundColor: `${project.accent}18`,
             color: project.accent,
             fontFamily: "var(--inter)",
             fontSize: "10px",
             letterSpacing: "0.04em",
-            border: `1px solid ${project.accent}40`,
-          }}>
+            border: `1px solid ${project.accent}30`,
+            display: "inline-block",
+          }}
+        >
           {project.subtitle}
         </span>
-      </div>
 
-      {/* Content */}
-      <div className="p-6">
+        {/* Title + icon */}
         <h3
-          className="text-xl font-semibold mb-2 flex items-center gap-2"
+          className="text-xl font-semibold flex items-center gap-2 mt-1"
           style={{ fontFamily: "var(--dm-serif), serif", color: "#1C1C1C" }}
         >
+          <img
+            src={assetUrl(project.icon!)}
+            alt=""
+            className="w-5 h-5 object-contain flex-shrink-0"
+            style={{ opacity: 0.55, filter: "brightness(0)" }}
+          />
           {project.title}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
-            <path d="M7 17L17 7M17 7H7M17 7V17"/>
-          </svg>
         </h3>
-        <div className="text-sm leading-relaxed mb-4" style={{ color: "#7A7060" }}>
+
+        {/* Description */}
+        <div className="text-sm leading-relaxed mt-2" style={{ color: "#7A7060" }}>
           {project.description.split('\n\n').map((para, i) => (
-            <p key={i} className={i > 0 ? "mt-3" : ""}>{para}</p>
+            <p key={i} className={i > 0 ? "mt-1" : ""}>{para}</p>
           ))}
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5 mt-2">
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="text-xs px-3 py-1 rounded-full"
+              className="text-xs px-2 py-0.5 rounded-full"
               style={{
-                backgroundColor: project.bgColor,
+                backgroundColor: `${project.accent}12`,
                 color: project.accent,
-                border: `1px solid ${project.accent}40`,
+                border: `1px solid ${project.accent}30`,
+                fontFamily: "var(--inter)",
               }}
             >
               {tag}
@@ -163,7 +153,7 @@ export default function WorkShowcase() {
         </h2>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-6">
         {projects.map((project, i) => (
           <ProjectCard key={project.id} project={project} index={i} />
         ))}
