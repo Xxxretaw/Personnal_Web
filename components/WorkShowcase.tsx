@@ -7,39 +7,39 @@ import { assetUrl } from "@/lib/assets";
 const projects = [
   {
     id: 1,
-    title: "三国的星空",
-    subtitle: "动画电影 · 后期特效",
+    title: "obs2feishu",
+    subtitle: "Obsidian 插件",
     description:
-      "参与动画电影《三国的星空》后期特效制作，负责镜头级特效合成与视觉增效，将传统三国叙事融入星空奇幻美学，打造沉浸式大银幕体验。",
-    tags: ["影视特效", "合成", "动画电影", "后期制作"],
+      "Obsidian 是我私人的第二大脑，但当我想把这些笔记分享到飞书时，发现图片链接失效、Callout 样式丢失——格式迁移的摩擦让我干脆放弃了分享。\n\n于是我把这个流程做成了 Obsidian 内置插件：一键导出原生 HTML，图片 Base64 内嵌、Callout 原样保留，复制进飞书编辑器就是干净的一份文档。",
+    tags: ["Obsidian", "HTML 导出", "知识管理", "飞书"],
     accent: "#3D7A5F",
     bgColor: "#E8F5EE",
-    image: "/project/三国的星空.jpg",
-    link: "https://v.qq.com/x/cover/mzc00200pawrfhd/f4101qfx0vp.html",
+    image: null,
+    link: "https://github.com/Xxxretaw/obs2feishu",
   },
   {
     id: 2,
-    title: "剑来 第二季",
-    subtitle: "动画剧集 · 制作统筹",
+    title: "TodoList",
+    subtitle: "桌面工具",
     description:
-      "担任国漫《剑来》第二季制片，负责全流程制作跟进与多部门统筹协调，确保高强度排期下各环节高质量交付。",
-    tags: ["动画制片", "制作管理", "统筹协调", "国漫"],
+      "太多事情稍纵即逝，等我打开备忘录再打字，它早就被新的念头覆盖了。\n\nWin+H 唤出、打字、回车——手不需要离开键盘，也不需要\"关闭\"这个动作，点击窗口外任意位置自动最小化。数据完全本地，没有任何网络请求。",
+    tags: ["PyQt6", "全局热键", "艾森豪威尔矩阵", "本地存储"],
     accent: "#C8763A",
     bgColor: "#FDF3E8",
-    image: "/project/剑来.jpg",
-    link: "https://v.qq.com/x/cover/mzc00200xxpsogl/y4101oeqq9j.html",
+    image: null,
+    link: "https://github.com/Xxxretaw/TodoList",
   },
   {
     id: 3,
-    title: "诛仙",
-    subtitle: "动画剧集 · 制作统筹",
+    title: "HSV 色彩识别",
+    subtitle: "图像标注辅助",
     description:
-      "参与仙侠动画《诛仙》制作统筹工作，横向协调原画、动效、后期各环节进度，把控整体节奏与质量标准，推动项目按时交付。",
-    tags: ["动画制片", "项目管理", "统筹协调", "仙侠"],
+      "人工判断色调容易受主观干扰，尤其是在大量图像标注工作中，标准不一会导致质量不稳定。\n\n通过 HSV 直方图分析，将图像的色彩分布量化输出，保证判断的一致性和可重复性。",
+    tags: ["HSV", "图像处理", "色彩分析", "Python"],
     accent: "#5B6FA8",
     bgColor: "#EBF1FB",
-    image: "/project/诛仙.jpg",
-    link: "https://v.qq.com/x/cover/mzc002003o7sldf/r4101sc41bd.html",
+    image: null,
+    link: "https://github.com/Xxxretaw",
   },
 ];
 
@@ -69,14 +69,29 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
 
       {/* Image area */}
       <div className="relative overflow-hidden aspect-[4/3] sm:aspect-video" style={{ backgroundColor: project.bgColor }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={assetUrl(project.image)}
-          alt={project.title}
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-        />
-        {/* Subtle overlay for readability */}
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.18) 0%, transparent 60%)" }} />
+        {project.image ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={assetUrl(project.image)}
+              alt={project.title}
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+            {/* Subtle overlay for readability */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.18) 0%, transparent 60%)" }} />
+          </>
+        ) : (
+          <div
+            className="w-full h-full flex items-center justify-center"
+            style={{ backgroundColor: project.bgColor }}
+          >
+            {/* Code bracket SVG icon */}
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={project.accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.6 }}>
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+          </div>
+        )}
         {/* Subtitle badge */}
         <span className="absolute bottom-3 left-3 text-xs px-2 py-0.5 rounded-full"
           style={{
@@ -102,9 +117,11 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
             <path d="M7 17L17 7M17 7H7M17 7V17"/>
           </svg>
         </h3>
-        <p className="text-sm leading-relaxed mb-4" style={{ color: "#7A7060" }}>
-          {project.description}
-        </p>
+        <div className="text-sm leading-relaxed mb-4" style={{ color: "#7A7060" }}>
+          {project.description.split('\n\n').map((para, i) => (
+            <p key={i} className={i > 0 ? "mt-3" : ""}>{para}</p>
+          ))}
+        </div>
         <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => (
             <span
