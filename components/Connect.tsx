@@ -2,10 +2,10 @@
 
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState } from "react";
+import { assetUrl } from "@/lib/assets";
 
 const EMAIL = "1005526552@qq.com";
 
-// ── Icon definitions ──────────────────────────────────────────────────────
 const EmailIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -19,36 +19,37 @@ const GitHubIcon = () => (
   </svg>
 );
 
-// 小红书 simplified book logo
-const XiaohongshuIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <rect x="4" y="2" width="13" height="18" rx="2" />
-    <rect x="6" y="20" width="9" height="2" rx="1" />
-    <path d="M7.5 7.5h7M7.5 11h7M7.5 14.5h4.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" fill="none" />
-    <circle cx="16.5" cy="5" r="3.5" fill="#FF2442" />
-    <text x="16.5" y="6.5" textAnchor="middle" fill="white" fontSize="4" fontWeight="bold" fontFamily="sans-serif">R</text>
-  </svg>
-);
+const SOCIALS = [
+  {
+    key: "github",
+    label: "GitHub",
+    iconSrc: null,
+    iconNode: <GitHubIcon />,
+    iconColor: "#1C1C1C",
+    href: "https://github.com/Xxxretaw",
+  },
+  {
+    key: "xiaohongshu",
+    label: "小红书",
+    iconSrc: assetUrl("/SVG/logos/xhs.svg"),
+    iconNode: null,
+    iconColor: "#FF2442",
+    href: "https://www.xiaohongshu.com/user/profile/6153b9e60000000002018825",
+  },
+  {
+    key: "bilibili",
+    label: "哔哩哔哩",
+    iconSrc: assetUrl("/SVG/logos/bilibili.svg"),
+    iconNode: null,
+    iconColor: "#00A1D6",
+    href: "https://space.bilibili.com/323570207",
+  },
+] as const;
 
-// Bilibili classic mascot silhouette
-const BilibiliIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    {/* Left antenna */}
-    <path d="M7.5 3 L5.5 6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
-    {/* Right antenna */}
-    <path d="M16.5 3 L18.5 6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
-    {/* Head/body */}
-    <rect x="3" y="6" width="18" height="13" rx="4" />
-    {/* Eyes */}
-    <circle cx="9" cy="13" r="2" fill="white" />
-    <circle cx="15" cy="13" r="2" fill="white" />
-    <circle cx="9.6" cy="13.4" r="1" fill="currentColor" />
-    <circle cx="15.6" cy="13.4" r="1" fill="currentColor" />
-  </svg>
-);
-
-// ── Email popover card ────────────────────────────────────────────────────
-function EmailPopover({ onClose }: { onClose: () => void }) {
+export default function Connect() {
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-80px" });
+  const [emailOpen, setEmailOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
@@ -59,105 +60,9 @@ function EmailPopover({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 8, scale: 0.96 }}
-      transition={{ duration: 0.2 }}
-      className="absolute left-1/2 z-50"
-      style={{
-        transform: "translateX(-50%)",
-        top: "calc(100% + 10px)",
-        background: "#FEFCF7",
-        border: "1.5px solid #C8B89A",
-        borderRadius: "14px",
-        boxShadow: "0 8px 28px rgba(0,0,0,0.12)",
-        padding: "16px 20px",
-        minWidth: "240px",
-        textAlign: "left",
-      }}
-    >
-      {/* Arrow */}
-      <div style={{
-        position: "absolute", top: "-7px", left: "50%", transform: "translateX(-50%)",
-        width: 0, height: 0,
-        borderLeft: "7px solid transparent", borderRight: "7px solid transparent",
-        borderBottom: "7px solid #C8B89A",
-      }} />
-      <div style={{
-        position: "absolute", top: "-5.5px", left: "50%", transform: "translateX(-50%)",
-        width: 0, height: 0,
-        borderLeft: "6px solid transparent", borderRight: "6px solid transparent",
-        borderBottom: "6px solid #FEFCF7",
-      }} />
-
-      <p style={{ fontSize: "11px", color: "#9A8A72", marginBottom: "6px", letterSpacing: "0.06em", fontFamily: "var(--inter)" }}>
-        邮件地址
-      </p>
-      <div className="flex items-center justify-between gap-3">
-        <span style={{ fontSize: "14px", color: "#1C1C1C", fontFamily: "var(--inter)", fontWeight: 500 }}>
-          {EMAIL}
-        </span>
-        <button
-          onClick={handleCopy}
-          style={{
-            padding: "4px 10px",
-            borderRadius: "8px",
-            border: "1px solid #C8B89A",
-            background: copied ? "#EFF7F2" : "#F5F0E8",
-            color: copied ? "#3D7A5F" : "#5A5048",
-            fontSize: "12px",
-            cursor: "pointer",
-            fontFamily: "var(--inter)",
-            transition: "all 0.2s",
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          {copied ? "已复制 ✓" : "复制"}
-        </button>
-      </div>
-    </motion.div>
-  );
-}
-
-// ── Social button ─────────────────────────────────────────────────────────
-const SOCIALS = [
-  {
-    key: "email",
-    label: "Email",
-    icon: <EmailIcon />,
-    href: null, // handled separately
-  },
-  {
-    key: "github",
-    label: "GitHub",
-    icon: <GitHubIcon />,
-    href: "https://github.com/Xxxretaw",
-  },
-  {
-    key: "xiaohongshu",
-    label: "小红书",
-    icon: <XiaohongshuIcon />,
-    href: "https://www.xiaohongshu.com/user/profile/6153b9e60000000002018825",
-  },
-  {
-    key: "bilibili",
-    label: "哔哩哔哩",
-    icon: <BilibiliIcon />,
-    href: "https://space.bilibili.com/323570207",
-  },
-] as const;
-
-export default function Connect() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const [emailOpen, setEmailOpen] = useState(false);
-
-  return (
     <section id="connect" className="px-6 py-20">
       <motion.div
-        ref={ref}
+        ref={sectionRef}
         initial={{ opacity: 0, y: 30 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7, ease: "easeOut" }}
@@ -181,70 +86,135 @@ export default function Connect() {
           无论是项目合作、技术交流，还是只是打个招呼，我都很乐意和你聊聊。
         </p>
 
-        {/* Social buttons */}
         <div className="flex items-center justify-center gap-4 flex-wrap">
-          {SOCIALS.map((social) => {
-            if (social.key === "email") {
-              return (
-                <div key="email" className="relative">
-                  <motion.button
-                    onClick={() => setEmailOpen((v) => !v)}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium"
+
+          {/* Email button + popover (wrapped to enable absolute centering) */}
+          <div className="relative">
+            <motion.button
+              onClick={() => setEmailOpen((v) => !v)}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium"
+              style={{
+                backgroundColor: emailOpen ? "#EFF7F2" : "#F5F0E8",
+                border: `1.5px solid ${emailOpen ? "#3D7A5F" : "#C8B89A"}`,
+                color: "#1C1C1C",
+                fontFamily: "var(--inter), sans-serif",
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ color: "#3D7A5F", display: "inline-flex" }}><EmailIcon /></span>
+              Email
+              <span style={{ fontSize: "10px", color: "#9A8A72", marginLeft: "-2px" }}>
+                {emailOpen ? "▲" : "▼"}
+              </span>
+            </motion.button>
+
+            <AnimatePresence>
+              {emailOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setEmailOpen(false)}
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.97, x: "-50%" }}
+                    animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+                    exit={{ opacity: 0, y: 6, scale: 0.97, x: "-50%" }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute z-50"
                     style={{
-                      backgroundColor: emailOpen ? "#EFF7F2" : "#F5F0E8",
-                      border: `1.5px solid ${emailOpen ? "#3D7A5F" : "#C8B89A"}`,
-                      color: "#1C1C1C",
-                      fontFamily: "var(--inter), sans-serif",
-                      cursor: "pointer",
+                      top: "calc(100% + 10px)",
+                      left: "50%",
+                      background: "#FEFCF7",
+                      border: "1.5px solid #C8B89A",
+                      borderRadius: "14px",
+                      boxShadow: "0 8px 28px rgba(0,0,0,0.12)",
+                      padding: "16px 20px",
+                      width: "max-content",
+                      textAlign: "left",
                     }}
                   >
-                    <span style={{ color: "#3D7A5F" }}><EmailIcon /></span>
-                    Email
-                    <span style={{ fontSize: "10px", color: "#9A8A72", marginLeft: "-2px" }}>
-                      {emailOpen ? "▲" : "▼"}
-                    </span>
-                  </motion.button>
+                    <div style={{
+                      position: "absolute", top: "-7px", left: "50%", transform: "translateX(-50%)",
+                      width: 0, height: 0,
+                      borderLeft: "7px solid transparent", borderRight: "7px solid transparent",
+                      borderBottom: "7px solid #C8B89A",
+                    }} />
+                    <div style={{
+                      position: "absolute", top: "-5.5px", left: "50%", transform: "translateX(-50%)",
+                      width: 0, height: 0,
+                      borderLeft: "6px solid transparent", borderRight: "6px solid transparent",
+                      borderBottom: "6px solid #FEFCF7",
+                    }} />
 
-                  <AnimatePresence>
-                    {emailOpen && (
-                      <>
-                        {/* Backdrop to close */}
-                        <div
-                          className="fixed inset-0 z-40"
-                          onClick={() => setEmailOpen(false)}
-                        />
-                        <EmailPopover onClose={() => setEmailOpen(false)} />
-                      </>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            }
+                    <p style={{ fontSize: "11px", color: "#9A8A72", marginBottom: "6px", letterSpacing: "0.06em", fontFamily: "var(--inter)" }}>
+                      邮件地址
+                    </p>
+                    <div className="flex items-center justify-between gap-3">
+                      <span style={{ fontSize: "14px", color: "#1C1C1C", fontFamily: "var(--inter)", fontWeight: 500 }}>
+                        {EMAIL}
+                      </span>
+                      <button
+                        onClick={handleCopy}
+                        style={{
+                          padding: "4px 10px",
+                          borderRadius: "8px",
+                          border: "1px solid #C8B89A",
+                          background: copied ? "#EFF7F2" : "#F5F0E8",
+                          color: copied ? "#3D7A5F" : "#5A5048",
+                          fontSize: "12px",
+                          cursor: "pointer",
+                          fontFamily: "var(--inter)",
+                          transition: "all 0.2s",
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {copied ? "已复制 ✓" : "复制"}
+                      </button>
+                    </div>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
 
-            return (
-              <motion.a
-                key={social.key}
-                href={social.href!}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium"
-                style={{
-                  backgroundColor: "#F5F0E8",
-                  border: "1.5px solid #C8B89A",
-                  color: "#1C1C1C",
-                  fontFamily: "var(--inter), sans-serif",
-                  textDecoration: "none",
-                }}
-              >
-                <span style={{ color: "#3D7A5F" }}>{social.icon}</span>
-                {social.label}
-              </motion.a>
-            );
-          })}
+          {/* Social link buttons */}
+          {SOCIALS.map((social) => (
+            <motion.a
+              key={social.key}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium"
+              style={{
+                backgroundColor: "#F5F0E8",
+                border: "1.5px solid #C8B89A",
+                color: "#1C1C1C",
+                fontFamily: "var(--inter), sans-serif",
+                textDecoration: "none",
+              }}
+            >
+              <span style={{ color: social.iconColor, display: "inline-flex", width: 20, height: 20 }}>
+                {social.iconSrc ? (
+                  <img
+                    src={social.iconSrc}
+                    alt={social.label}
+                    width={20}
+                    height={20}
+                    style={{ display: "block" }}
+                  />
+                ) : (
+                  social.iconNode
+                )}
+              </span>
+              {social.label}
+            </motion.a>
+          ))}
+
         </div>
       </motion.div>
 
