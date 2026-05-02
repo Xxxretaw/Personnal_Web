@@ -1,5 +1,7 @@
 # 个人网站
 
+**在线预览：[xxxretaw.github.io/Personnal_Web](https://xxxretaw.github.io/Personnal_Web/)**
+
 AI 训练师的个人作品集网站，展示 AI 辅助工具、动画制作经历与音乐分享。
 
 ## 技术栈
@@ -17,7 +19,7 @@ npm install
 npm run dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000) 查看页面。
+开发服务器启动后，打开 [http://localhost:3000](http://localhost:3000) 查看本地页面。
 
 ## 项目结构
 
