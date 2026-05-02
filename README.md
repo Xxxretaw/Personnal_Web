@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 个人网站
 
-## Getting Started
+AI 训练师的个人作品集网站，展示 AI 辅助工具、动画制作经历与音乐分享。
 
-First, run the development server:
+## 技术栈
+
+- **Next.js 16** (App Router) + **React 19**
+- **Tailwind CSS v4** (CSS-based config)
+- **Framer Motion v12** 动效
+- **Lenis** 平滑滚动
+- **TypeScript**
+
+## 开始使用
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+打开 [http://localhost:3000](http://localhost:3000) 查看页面。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 项目结构
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/
+  layout.tsx      — 全局布局（字体、LenisProvider）
+  page.tsx        — 主页组装
+  globals.css     — Tailwind v4 @theme 设计令牌 + CSS 纹理
+components/
+  Hero.tsx        — 首屏介绍
+  WorkShowcase.tsx — AI 工具展示（obs2feishu、TodoList、HSV 色彩识别）
+  AboutBeliefs.tsx — 过往动画作品（三国的星空、剑来、诛仙）
+  MusicSection.tsx — 人生歌单
+  Connect.tsx     — 联系方式
+  Navbar.tsx      — 固定导航栏
+  SideColumns.tsx — 装饰侧边栏
+lib/
+  assets.ts       — 静态资源路径工具
+```
