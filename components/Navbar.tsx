@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useLenis } from "@/components/LenisContext";
-import { useMusic, SONGS } from "@/components/MusicContext";
-import { assetUrl } from "@/lib/assets";
+import { useMusic } from "@/components/MusicContext";
 
 const navLinks = [
   { label: "work", href: "#work" },
@@ -14,7 +13,7 @@ const navLinks = [
 
 export default function Navbar() {
   const lenis = useLenis();
-  const { current, currentIndex, isPlaying, togglePlay, selectSong } = useMusic();
+  const { songs, current, currentIndex, isPlaying, togglePlay, selectSong } = useMusic();
 
   const scrollTo = (target: string | number) => {
     if (lenis) {
@@ -29,11 +28,13 @@ export default function Navbar() {
   };
 
   const goPrev = () => {
-    const prev = (currentIndex - 1 + SONGS.length) % SONGS.length;
+    if (songs.length === 0) return;
+    const prev = (currentIndex - 1 + songs.length) % songs.length;
     selectSong(prev);
   };
   const goNext = () => {
-    const next = (currentIndex + 1) % SONGS.length;
+    if (songs.length === 0) return;
+    const next = (currentIndex + 1) % songs.length;
     selectSong(next);
   };
 
@@ -107,16 +108,18 @@ export default function Navbar() {
         >
           {/* Cover */}
           <div className="flex-shrink-0 w-8 h-8 rounded overflow-hidden shadow-sm">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={assetUrl(current.cover)} alt="" className="w-full h-full object-cover" />
+            {current && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={current.pic} alt="" className="w-full h-full object-cover" />
+            )}
           </div>
           {/* Title + artist (hidden on very small screens) */}
           <div className="hidden sm:block min-w-0 max-w-[120px] md:max-w-[160px]">
             <p className="text-xs font-medium truncate" style={{ color: "#1C1C1C", fontFamily: "var(--inter)" }}>
-              {current.title}
+              {current?.name ?? "加载中..."}
             </p>
             <p className="text-[10px] truncate" style={{ color: "#7A7060", fontFamily: "var(--inter)" }}>
-              {current.artist}
+              {current?.artist ?? ""}
             </p>
           </div>
         </a>
