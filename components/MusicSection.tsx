@@ -1,15 +1,13 @@
 "use client";
 
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useCallback } from "react";
-import { useMusic, SONGS } from "@/components/MusicContext";
-import { assetUrl } from "@/lib/assets";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRef, useCallback, useState, useEffect } from "react";
+import { useMusic, type PlayMode } from "@/components/MusicContext";
 
 // ── Vinyl with album cover (spins when playing) ────────────────────────────
 function VinylWithCover({ coverSrc, isPlaying }: { coverSrc: string; isPlaying: boolean }) {
-  const src = assetUrl(coverSrc);
   return (
-    <div className="relative flex-shrink-0 w-32 h-32 sm:w-[150px] sm:h-[150px]">
+    <div className="relative flex-shrink-0 w-44 h-44 sm:w-52 sm:h-52">
       <div className="absolute inset-0 rounded-full"
         style={{ background: "radial-gradient(circle at 50% 50%, #333 0%, #1C1A18 100%)", filter: "blur(6px)" }} />
       <div
@@ -19,7 +17,6 @@ function VinylWithCover({ coverSrc, isPlaying }: { coverSrc: string; isPlaying: 
           boxShadow: "0 4px 24px rgba(0,0,0,0.4), inset 0 0 60px rgba(0,0,0,0.3)",
         }}
       >
-        {/* Black vinyl disc with grooves */}
         <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
           <defs>
             <radialGradient id="vinyl-glow" cx="50%" cy="50%" r="50%">
@@ -33,92 +30,16 @@ function VinylWithCover({ coverSrc, isPlaying }: { coverSrc: string; isPlaying: 
           ))}
           <circle cx="100" cy="100" r="42" fill="transparent" />
         </svg>
-        {/* Center label: album cover (larger = less black vinyl) */}
         <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 2 }}>
           <div className="rounded-full overflow-hidden" style={{
             width: "72%", height: "72%", boxShadow: "0 0 0 2px rgba(0,0,0,0.2)",
           }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt="" className="w-full h-full object-cover" />
+            <img src={coverSrc} alt="" className="w-full h-full object-cover" />
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-// ── Ambient overlay (colors from cover image, per song) ───────────────────
-function hexToRgba(hex: string, alpha: number) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `rgba(${r},${g},${b},${alpha})`;
-}
-
-function MusicAmbientOverlay({
-  accentColor,
-  accentColor2,
-}: {
-  accentColor: string;
-  accentColor2?: string;
-}) {
-  const c1 = hexToRgba(accentColor, 0.14);
-  const c2 = hexToRgba(accentColor2 ?? accentColor, 0.10);
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 1.4 }}
-      key={accentColor}
-      className="fixed inset-0 z-[4] pointer-events-none select-none"
-      aria-hidden="true"
-    >
-      {/* 光晕 1 — 缓慢漂浮 */}
-      <motion.div
-        animate={{
-          x: ["0%", "6%", "-4%", "3%", "0%"],
-          y: ["0%", "-5%", "4%", "-3%", "0%"],
-          scale: [1, 1.06, 0.97, 1.04, 1],
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", repeatType: "mirror" }}
-        style={{
-          position: "absolute", top: "-15%", left: "-10%",
-          width: "60vw", height: "60vw",
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${c1} 0%, transparent 68%)`,
-        }}
-      />
-      {/* 光晕 2 — 不同节奏漂浮 */}
-      <motion.div
-        animate={{
-          x: ["0%", "-5%", "4%", "-2%", "0%"],
-          y: ["0%", "6%", "-3%", "5%", "0%"],
-          scale: [1, 0.95, 1.05, 0.98, 1],
-        }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", repeatType: "mirror", delay: 3 }}
-        style={{
-          position: "absolute", bottom: "-18%", right: "-8%",
-          width: "50vw", height: "50vw",
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${c2} 0%, transparent 68%)`,
-        }}
-      />
-      {/* 光晕 3 — 中央游荡，极淡 */}
-      <motion.div
-        animate={{
-          x: ["0%", "8%", "-6%", "4%", "-3%", "0%"],
-          y: ["0%", "-4%", "7%", "-5%", "3%", "0%"],
-        }}
-        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut", repeatType: "mirror", delay: 7 }}
-        style={{
-          position: "absolute", top: "30%", left: "25%",
-          width: "40vw", height: "40vw",
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${hexToRgba(accentColor, 0.06)} 0%, transparent 65%)`,
-        }}
-      />
-    </motion.div>
   );
 }
 
@@ -198,16 +119,11 @@ function SeekBar({
           }
         }}
         className="flex-1 h-2 rounded-full cursor-pointer select-none relative overflow-hidden"
-        style={{
-          backgroundColor: "#E0D4C0",
-        }}
+        style={{ backgroundColor: "#E0D4C0" }}
       >
         <div
           className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-100"
-          style={{
-            width: `${progress * 100}%`,
-            backgroundColor: "#3D7A5F",
-          }}
+          style={{ width: `${progress * 100}%`, backgroundColor: "#3D7A5F" }}
         />
       </div>
       <span
@@ -220,28 +136,96 @@ function SeekBar({
   );
 }
 
+// ── Play mode toggle ─────────────────────────────────────────────────────
+function PlayModeButton({ mode, onChange }: { mode: PlayMode; onChange: (m: PlayMode) => void }) {
+  const next = mode === "sequential" ? "shuffle" : "sequential";
+  const label = mode === "sequential" ? "顺序播放" : "随机播放";
+  return (
+    <button
+      onClick={() => onChange(next)}
+      aria-label={label}
+      title={label}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition-colors"
+      style={{
+        backgroundColor: mode === "shuffle" ? "#EFF7F2" : "#F5F0E8",
+        color: mode === "shuffle" ? "#3D7A5F" : "#7A7060",
+        border: `1px solid ${mode === "shuffle" ? "#3D7A5F" : "#E0D4C0"}`,
+        fontFamily: "var(--inter)",
+      }}
+    >
+      {mode === "sequential" ? (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M17 3L21 7L17 11" /><path d="M3 11V9a4 4 0 0 1 4-4h14" />
+          <path d="M7 21L3 17L7 13" /><path d="M21 13v2a4 4 0 0 1-4 4H3" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M16 3h5v5" /><path d="M4 20L21 3" />
+          <path d="M21 16v5h-5" /><path d="M15 15l6 6" /><path d="M4 4l5 5" />
+        </svg>
+      )}
+      {label}
+    </button>
+  );
+}
+
+// ── Prev / Next buttons ──────────────────────────────────────────────────
+function SkipButton({ direction, onClick }: { direction: "prev" | "next"; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={direction === "prev" ? "上一首" : "下一首"}
+      className="w-10 h-10 flex items-center justify-center rounded-full transition-all"
+      style={{
+        color: "#5A5248",
+        backgroundColor: "rgba(224,212,192,0.35)",
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.backgroundColor = "rgba(224,212,192,0.7)";
+        e.currentTarget.style.transform = "scale(1.08)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.backgroundColor = "rgba(224,212,192,0.35)";
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+    >
+      {direction === "prev" ? (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="4" y="5" width="2.5" height="14" rx="1" />
+          <path d="M18 5.5 L9 12 L18 18.5 Z" />
+        </svg>
+      ) : (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="17.5" y="5" width="2.5" height="14" rx="1" />
+          <path d="M6 5.5 L15 12 L6 18.5 Z" />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 // ── Play/Pause button ─────────────────────────────────────────────────────
-function PlayButton({ isPlaying, onClick }: { isPlaying: boolean; onClick: () => void }) {
+function PlayButton({ isPlaying, onClick, size = 48 }: { isPlaying: boolean; onClick: () => void; size?: number }) {
   return (
     <button onClick={onClick}
       style={{
-        width: 44, height: 44, borderRadius: "50%",
-        background: "#1C1A18", border: "none", cursor: "pointer",
+        width: size, height: size, borderRadius: "50%",
+        background: "#3D7A5F", border: "none", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center",
-        boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+        boxShadow: "0 2px 12px rgba(61,122,95,0.3)",
         transition: "transform 0.15s, opacity 0.15s",
         flexShrink: 0,
       }}
-      onMouseEnter={e => (e.currentTarget.style.opacity = "0.85")}
-      onMouseLeave={e => (e.currentTarget.style.opacity = "1")}
+      onMouseEnter={e => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "scale(1.05)"; }}
+      onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "scale(1)"; }}
     >
       {isPlaying ? (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="white">
           <rect x="3" y="2" width="4" height="12" rx="1" />
           <rect x="9" y="2" width="4" height="12" rx="1" />
         </svg>
       ) : (
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="white">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="white">
           <path d="M4 2 L14 8 L4 14 Z" />
         </svg>
       )}
@@ -249,7 +233,7 @@ function PlayButton({ isPlaying, onClick }: { isPlaying: boolean; onClick: () =>
   );
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────
+// ── Doodle wave ───────────────────────────────────────────────────────────
 function DoodleWave({ width = 80, color = "#E8A87C", opacity = 0.55 }: { width?: number; color?: string; opacity?: number }) {
   return (
     <svg width={width} height="12" viewBox={`0 0 ${width} 12`} fill="none" style={{ opacity }}>
@@ -259,320 +243,239 @@ function DoodleWave({ width = 80, color = "#E8A87C", opacity = 0.55 }: { width?:
   );
 }
 
-function InkIcon({ src, size, rotate = 0, opacity = 0.22, style }: {
-  src: string; size: number; rotate?: number; opacity?: number; style?: React.CSSProperties;
-}) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={assetUrl(src)} alt="" width={size} height={size} draggable={false}
-      style={{ display: "block", transform: `rotate(${rotate}deg)`, filter: "brightness(0)",
-        opacity, pointerEvents: "none", userSelect: "none", ...style }} />
-  );
-}
-
-function MusicDoodles() {
-  return (
-    <div className="relative w-full h-full" style={{ minHeight: "72px" }} aria-hidden="true">
-      <InkIcon src="/SVG/weather/thunderstorm.svg"    size={54} rotate={10}  opacity={0.22} style={{ position: "absolute", top: "10%", left: "20%" }} />
-      <InkIcon src="/SVG/emojis/heart-eyes-emoji.svg" size={50} rotate={-8}  opacity={0.2}  style={{ position: "absolute", top: "40%", left: "42%" }} />
-      <InkIcon src="/SVG/objects/anchor.svg"          size={46} rotate={15}  opacity={0.18} style={{ position: "absolute", top: "15%", left: "62%" }} />
-      <InkIcon src="/SVG/objects/movie-clapper.svg"   size={54} rotate={-15} opacity={0.18} style={{ position: "absolute", top: "45%", left: "78%" }} />
-    </div>
-  );
-}
-
 // ── Main component ────────────────────────────────────────────────────────
 export default function MusicSection() {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const [visible, setVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.01 }
+    );
+    observer.observe(el);
+
+    const fallback = setTimeout(() => {
+      if (!sectionRef.current) return;
+      const rect = sectionRef.current.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        setVisible(true);
+        observer.disconnect();
+      }
+    }, 1200);
+
+    return () => { observer.disconnect(); clearTimeout(fallback); };
+  }, []);
+
   const {
+    songs,
+    loading,
+    error,
     currentIndex,
     isPlaying,
     currentTime,
     duration,
     current,
+    playMode,
+    setPlayMode,
     togglePlay,
     selectSong,
     handleSeek,
   } = useMusic();
 
   const goPrev = () => {
-    const prev = (currentIndex - 1 + SONGS.length) % SONGS.length;
-    selectSong(prev);
+    if (songs.length === 0) return;
+    if (playMode === "shuffle") {
+      const rand = Math.floor(Math.random() * songs.length);
+      selectSong(rand === currentIndex && songs.length > 1 ? (rand + 1) % songs.length : rand);
+    } else {
+      selectSong((currentIndex - 1 + songs.length) % songs.length);
+    }
   };
   const goNext = () => {
-    const next = (currentIndex + 1) % SONGS.length;
-    selectSong(next);
+    if (songs.length === 0) return;
+    if (playMode === "shuffle") {
+      const rand = Math.floor(Math.random() * songs.length);
+      selectSong(rand === currentIndex && songs.length > 1 ? (rand + 1) % songs.length : rand);
+    } else {
+      selectSong((currentIndex + 1) % songs.length);
+    }
   };
 
-  return (
-    <section id="music" className="py-12 px-6">
-      <AnimatePresence mode="wait">
-        {isPlaying && (
-          <MusicAmbientOverlay
-            key={currentIndex}
-            accentColor={current.accentColor}
-            accentColor2={current.accentColor2}
-          />
-        )}
-      </AnimatePresence>
+  if (loading) {
+    return (
+      <section id="music" ref={sectionRef} className="py-16 px-6">
+        <p style={{ color: "#7A7060", fontFamily: "var(--inter)", textAlign: "center" }}>
+          正在加载歌单...
+        </p>
+      </section>
+    );
+  }
 
-      {/* ── Header row ── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-stretch gap-6 mb-10">
-        <motion.div ref={ref}
-          initial={{ opacity: 0, y: 20 }} animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }} className="flex-shrink-0 w-full sm:w-48">
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <p className="text-sm tracking-widest uppercase" style={{ color: "#7A7060" }}>Music</p>
-            <h2 className="text-4xl whitespace-nowrap" style={{ fontFamily: "var(--caveat), cursive", color: "#1C1C1C" }}>
-              人生歌单分享
-            </h2>
-            <div className="mb-1"><DoodleWave width={110} color="#E8A87C" opacity={0.6} /></div>
-          </div>
-        </motion.div>
-        <div className="flex-1"><MusicDoodles /></div>
+  if (error || !current) {
+    return (
+      <section id="music" ref={sectionRef} className="py-16 px-6">
+        <p style={{ color: "#C44A4A", fontFamily: "var(--inter)", textAlign: "center" }}>
+          歌单加载失败：{error}
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      id="music"
+      ref={sectionRef}
+      className="py-16 px-6"
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "none" : "translateY(20px)",
+        transition: "opacity 0.6s ease, transform 0.6s ease",
+      }}
+    >
+      {/* ── Header ── */}
+      <div className="flex items-baseline gap-3 flex-wrap mb-10">
+        <p className="text-sm tracking-widest uppercase" style={{ color: "#7A7060" }}>Music</p>
+        <h2 className="text-4xl whitespace-nowrap" style={{ fontFamily: "var(--caveat), cursive", color: "#1C1C1C" }}>
+          人生歌单分享
+        </h2>
+        <div className="mb-1"><DoodleWave width={110} color="#E8A87C" opacity={0.6} /></div>
       </div>
 
-      {/* ── Main 2-column grid ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+      {/* ── Two-column: player left + playlist right ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-6 items-start">
 
-        {/* ── Left: Vinyl + dynamic info ── */}
-        <motion.div
-          initial={{ opacity: 0, x: -24 }} animate={isInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}>
+        {/* ── Left: Player card ── */}
+        <div
+          className="rounded-2xl p-6 flex flex-col"
+          style={{
+            background: "linear-gradient(135deg, #FEFCF7 0%, #F5F0E8 100%)",
+            border: "1px solid #E0D4C0",
+            boxShadow: "0 2px 16px rgba(0,0,0,0.04)",
+          }}
+        >
+          <div className="flex flex-col items-center flex-1 justify-center">
+            <VinylWithCover coverSrc={current.pic} isPlaying={isPlaying} />
 
-          {/* Vinyl + controls row */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-7">
-            <VinylWithCover coverSrc={current.cover} isPlaying={isPlaying} />
-
-            {/* Song meta + play button */}
-            <div className="flex-1 min-w-0">
+            <div className="mt-5 text-center w-full">
               <AnimatePresence mode="wait">
                 <motion.div key={currentIndex}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
                   <p className="text-xs uppercase tracking-widest mb-1" style={{ color: "#9A8A72", fontFamily: "var(--inter)" }}>
-                    {current.genre}
+                    {current.album}
                   </p>
-                  <p className="font-medium leading-snug mb-1"
-                    style={{ fontFamily: "var(--dm-serif), serif", color: "#1C1C1C", fontSize: "1rem" }}>
-                    {current.title}
+                  <p className="text-lg font-medium leading-snug mb-1"
+                    style={{ fontFamily: "var(--dm-serif), serif", color: "#1C1C1C" }}>
+                    {current.name}
                   </p>
                   <p className="text-sm" style={{ color: "#7A7060", fontFamily: "var(--inter)" }}>
                     {current.artist}
                   </p>
                 </motion.div>
               </AnimatePresence>
-              <div className="mt-4 flex items-center gap-3">
-                <button
-                  onClick={goPrev}
-                  aria-label="上一首"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E0D4C0]/50 transition-colors hover:bg-[#E0D4C0]/80"
-                  style={{ color: "#7A7060" }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M10 12 L4 8 L10 4 Z" />
-                  </svg>
-                </button>
+
+              {/* Controls */}
+              <div className="mt-5 flex items-center justify-center gap-3">
+                <SkipButton direction="prev" onClick={goPrev} />
                 <PlayButton isPlaying={isPlaying} onClick={togglePlay} />
-                <button
-                  onClick={goNext}
-                  aria-label="下一首"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#E0D4C0]/50 transition-colors hover:bg-[#E0D4C0]/80"
-                  style={{ color: "#7A7060" }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
-                    <path d="M6 4 L12 8 L6 12 Z" />
-                  </svg>
-                </button>
+                <SkipButton direction="next" onClick={goNext} />
+                <div className="ml-1">
+                  <PlayModeButton mode={playMode} onChange={setPlayMode} />
+                </div>
+              </div>
+
+              {/* Progress bar */}
+              <div className="mt-4 w-full max-w-sm mx-auto">
+                <SeekBar currentTime={currentTime} duration={duration} onSeek={handleSeek} />
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Progress bar / seekable timeline */}
-          <div className="w-full max-w-md lg:max-w-lg mb-4">
-            <SeekBar
-              currentTime={currentTime}
-              duration={duration}
-              onSeek={handleSeek}
-            />
-          </div>
-
-          {/* Sticky note description */}
-          <AnimatePresence mode="wait">
-            <motion.div key={`note-${currentIndex}`}
-              initial={{ opacity: 0, y: 10, rotate: -1 }}
-              animate={{ opacity: 1, y: 0, rotate: -0.8 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.35 }}
-              className="relative mt-2 mb-4 w-full max-w-md lg:max-w-lg">
-              <div style={{
-                background: "linear-gradient(165deg, #FEFCF7 0%, #F5F0E8 100%)",
-                borderRadius: "6px",
-                padding: "20px 22px 16px",
-                boxShadow: "2px 3px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)",
-                borderLeft: "3px solid #3D7A5F",
-                position: "relative",
-              }}>
-                <div style={{
-                  position: "absolute", top: "-4px", left: "20px",
-                  width: "40px", height: "8px", borderRadius: "1px",
-                  background: "rgba(61,122,95,0.2)",
-                }} />
-                <p style={{
-                  color: "#3A3630",
-                  fontFamily: "var(--caveat), cursive",
-                  fontSize: "1.05rem",
-                  lineHeight: 1.7,
-                  margin: 0,
-                }}>
-                  {current.description}
-                </p>
-                <p style={{
-                  color: "#7A7060",
-                  fontFamily: "var(--caveat), cursive",
-                  fontSize: "0.85rem",
-                  marginTop: "10px",
-                  textAlign: "right",
-                }}>
-                  — {current.vibe}
-                </p>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Dynamic genre tags */}
-          <AnimatePresence mode="wait">
-            <motion.div key={`tags-${currentIndex}`}
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }} className="flex flex-wrap gap-2">
-              {current.tags.map((tag, i) => (
-                <motion.span key={tag}
-                  initial={{ opacity: 0, scale: 0.8, y: 6 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: i * 0.06, type: "spring", stiffness: 260, damping: 20 }}
-                  whileHover={{
-                    scale: 1.04,
-                    backgroundColor: "#3D7A5F",
-                    color: "#FEFCF7",
-                    borderColor: "#3D7A5F",
-                  }}
-                  whileTap={{ scale: 0.98, transition: { duration: 0.2 } }}
-                  className="text-xs px-3 py-1 rounded-full cursor-default select-none"
-                  style={{
-                    backgroundColor: "#EBE5D8",
-                    border: "1px solid #D4C8B0",
-                    color: "#5A5048",
-                    fontFamily: "var(--inter)",
-                    letterSpacing: "0.03em",
-                  }}>
-                  {tag}
-                </motion.span>
-              ))}
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
-
-        {/* ── Right: Scrollable playlist ── */}
-        <motion.div
-          initial={{ opacity: 0, x: 24 }} animate={isInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.18 }}>
-
-          <div className="flex items-center gap-2 mb-4">
-            <p className="text-xs tracking-widest uppercase" style={{ color: "#7A7060", fontFamily: "var(--inter)" }}>
+        {/* ── Right: Playlist ── */}
+        <div
+          className="rounded-2xl overflow-hidden flex flex-col"
+          style={{
+            border: "1px solid #E0D4C0",
+            background: "#FEFCF7",
+            maxHeight: "min(600px, 70vh)",
+          }}
+        >
+          <div className="flex items-center px-5 py-3 flex-shrink-0"
+            style={{ borderBottom: "1px solid #E0D4C0", background: "#F5F0E8" }}>
+            <p className="text-xs tracking-widest uppercase font-medium" style={{ color: "#7A7060", fontFamily: "var(--inter)" }}>
               播放列表
             </p>
-            <svg width="28" height="20" viewBox="0 0 28 20" fill="none" style={{ opacity: 0.45 }}>
-              <path d="M 2 10 C 8 8, 16 9, 22 10" stroke="#3D7A5F" strokeWidth="2" strokeLinecap="round" />
-              <path d="M 18 5 C 21 8, 22 9, 22 10 C 22 11, 21 13, 18 16" stroke="#3D7A5F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
           </div>
 
-          {/* Scrollable list */}
-          <div style={{ maxHeight: "420px", overflowY: "auto", paddingRight: "6px" }}
-            className="space-y-2 playlist-scroll"
+          <div style={{ overflowY: "auto", padding: "6px" }}
+            className="playlist-scroll flex-1 min-h-0"
             data-lenis-prevent>
-            {SONGS.map((song, i) => {
+            {songs.map((song, i) => {
               const active = i === currentIndex;
               return (
-                <motion.div key={song.file}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.4, delay: 0.2 + i * 0.06 }}
+                <div key={`${song.id}-${i}`}
                   onClick={() => selectSong(i)}
-                  className="flex items-center gap-3 p-3 rounded-xl cursor-pointer select-none"
+                  className="flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer select-none"
                   style={{
-                    backgroundColor: active ? "#EFF7F2" : "#FEFCF7",
-                    border: `1.5px solid ${active ? "#3D7A5F" : "#E0D4C0"}`,
-                    transition: "all 0.18s ease",
+                    backgroundColor: active ? "#EFF7F2" : "transparent",
+                    transition: "background-color 0.15s ease",
                   }}
                   onMouseEnter={e => {
-                    if (!active) {
-                      (e.currentTarget as HTMLElement).style.borderColor = "#A8C8B8";
-                      (e.currentTarget as HTMLElement).style.backgroundColor = "#F5FBF7";
-                    }
+                    if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "#F5F0E8";
                   }}
                   onMouseLeave={e => {
-                    if (!active) {
-                      (e.currentTarget as HTMLElement).style.borderColor = "#E0D4C0";
-                      (e.currentTarget as HTMLElement).style.backgroundColor = "#FEFCF7";
-                    }
+                    if (!active) (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
                   }}
                 >
-                  {/* Track number */}
-                  <span style={{ width: 20, fontSize: "11px", color: active ? "#3D7A5F" : "#C0B0A0",
-                    fontFamily: "var(--inter)", textAlign: "center", flexShrink: 0, fontWeight: active ? 600 : 400 }}>
-                    {i + 1}
+                  <span style={{ width: 24, fontSize: "11px", color: active ? "#3D7A5F" : "#C0B0A0",
+                    fontFamily: "var(--inter)", textAlign: "right", flexShrink: 0, fontWeight: active ? 600 : 400 }}>
+                    {active && isPlaying ? (
+                      <span className="flex items-end justify-end gap-px" style={{ height: 14 }}>
+                        {[1, 2, 3].map((bar) => (
+                          <span key={bar} style={{
+                            display: "inline-block", width: 3, borderRadius: 2, backgroundColor: "#3D7A5F",
+                            animation: `equalizer-bar-${bar} ${0.5 + bar * 0.15}s ease-in-out infinite alternate`,
+                            height: bar === 2 ? "100%" : "60%",
+                          }} />
+                        ))}
+                      </span>
+                    ) : (
+                      i + 1
+                    )}
                   </span>
 
-                  {/* Song cover */}
                   <div className="flex-shrink-0 overflow-hidden" style={{
-                    width: 36, height: 36, borderRadius: "6px",
-                    boxShadow: active ? `0 0 0 2px ${song.labelColor}60` : "0 1px 3px rgba(0,0,0,0.08)",
+                    width: 32, height: 32, borderRadius: "5px",
+                    boxShadow: active ? "0 0 0 1.5px rgba(61,122,95,0.4)" : "0 1px 2px rgba(0,0,0,0.06)",
                   }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={assetUrl(song.cover)} alt="" className="w-full h-full object-cover" />
+                    <img src={song.pic} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </div>
 
-                  {/* Title + artist */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium leading-tight truncate"
-                      style={{ fontFamily: "var(--inter)", color: active ? "#1C1C1C" : "#2A2020",
+                    <p className="text-sm leading-tight truncate"
+                      style={{ fontFamily: "var(--inter)", color: active ? "#3D7A5F" : "#2A2020",
                         fontWeight: active ? 600 : 400 }}>
-                      {song.title}
+                      {song.name}
                     </p>
                     <p className="text-xs mt-0.5 truncate" style={{ color: "#9A8A72", fontFamily: "var(--inter)" }}>
                       {song.artist}
                     </p>
                   </div>
-
-                  {/* Genre badge */}
-                  <span className="flex-shrink-0 text-xs px-2 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor: active ? "#D8EFE5" : "#F0EBE1",
-                      color: active ? "#2D6A50" : "#8A7A68",
-                      fontFamily: "var(--inter)", fontSize: "10px", letterSpacing: "0.03em",
-                    }}>
-                    {song.genre}
-                  </span>
-
-                  {/* Playing indicator */}
-                  {active && isPlaying && (
-                    <div className="flex items-end gap-0.5 flex-shrink-0" style={{ height: 14 }}>
-                      {[1, 2, 3].map((bar) => (
-                        <div key={bar} style={{
-                          width: 3, borderRadius: 2, backgroundColor: "#3D7A5F",
-                          animation: `equalizer-bar-${bar} ${0.5 + bar * 0.15}s ease-in-out infinite alternate`,
-                          height: bar === 2 ? "100%" : "60%",
-                        }} />
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
+                </div>
               );
             })}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
